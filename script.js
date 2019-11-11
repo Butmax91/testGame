@@ -16,14 +16,61 @@ class Game{
     }
     checkGameOver(){
         let checkArr = [];
-        this.mainData.forEach((row,i)=>{
-
-
+        this.mainData.forEach((row)=>{
+            row.forEach((td)=>{
+                checkArr.push(td);
+            })
         });
+        for (let i = 0; i <= this.length  ; i++) {
+            let row = [];
+            let col = [];
+            let diagonal = [];
+            let diagonalReverse = [];
+            checkArr.forEach((el)=>{
+                if (el.coords[0] === i){
+                    row.push(el);
+                }
+                if (el.coords[1] === i){
+                    col.push(el);
+                }
+                if (el.coords[1] ===  el.coords[0] ){
+                    diagonal.push(el);
+                }
+                if ((el.coords[1] +  el.coords[0]) === this.length){
+                    diagonalReverse.push(el);
+                }
+            });
+            if (row.filter((el, index, arr) => {
+                return el.value === arr[0].value && el.value !== null
+            }).length === row.length){
+                console.log('row');
+                this.gameOver = true;
+                return
 
+            }
+            if (col.filter((el, index, arr) => {
+                return el.value === arr[0].value && el.value !== null
+            }).length === col.length){
+                console.log('col');
+                this.gameOver = true;
+                return
+            }
+            if (diagonal.filter((el, index, arr) => {
+                return el.value === arr[0].value && el.value !== null
+            }).length === diagonal.length){
+                console.log('diagonal');
+                this.gameOver = true;
+                return
+            }
+            if (diagonalReverse.filter((el, index, arr) => {
+                return el.value === arr[0].value && el.value !== null
+            }).length === diagonalReverse.length){
+                console.log('diagonalReverse');
+                this.gameOver = true;
+                return
+            }
 
-
-
+        }
     }
     createData(){
         for (let i = 0; i <= this.length ; i++) {
