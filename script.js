@@ -1,123 +1,129 @@
 class Game{
     constructor(){
         this.app = document.querySelector('.app');
-        this.userFirst = Math.random() > 0.5;
-        this.gameOver = false;
+        this.length = 2;
         this.init();
     }
     init(){
-        this.create();
+        this.mainData = [];
+        this.userFirst = false //Math.random() > 0.5;
+        this.pos = [0,0];
+        this.gameOver = false;
         this.addEvent();
-        this.checkEndGame();
-        if(!this.userFirst){
-            this.computerMove();
-        }
-    }
-    create(){
-        this.currentPosition = [0,0];
-        let container = document.createElement('table');
-        for (let i = 0; i < 3 ; i++) {
-            let tr = document.createElement('tr');
-            for (let j = 0; j < 3 ; j++) {
-                let td = document.createElement('td');
-                td.dataset.active = '0';
-                td.dataset.value = '';
-                td.dataset.y = i;
-                td.dataset.x = j;
-                if (i=== this.currentPosition[0] && j === this.currentPosition[1]){
-                    td.classList.add('active');
-                    td.dataset.active = '1';
+        this.createData();
+        this.userFirst ? this.activeteCell() :  this.computerMove();
 
+    }
+    checkGameOver(){
+        let checkArr = [];
+        this.mainData.forEach((row,i)=>{
+
+
+        });
+
+
+
+
+    }
+    createData(){
+        for (let i = 0; i <= this.length ; i++) {
+            let row = [];
+            for (let j = 0; j <= this.length; j++) {
+                let td = {
+                    coords: [i,j],
+                    isActive: false,
+                    value: null
                 }
-                tr.appendChild(td);
+                row.push(td);
             }
-            container.appendChild(tr);
+            this.mainData.push(row);
         }
-        this.app.appendChild(container)
+        this.createTable();
     }
     computerMove(){
-        this.checkEndGame();
         if (!this.gameOver){
-            let td =  [...this.app.querySelectorAll('td')].find(x=>x.dataset.value === "");
-            if (this.userFirst){
-                td.dataset.value = '0';
-                td.innerHTML = '0';
-            }else{
-                td.dataset.value = 'X';
-                td.innerHTML = 'X';
-            }
+            let dataArr = [];
+            this.mainData.forEach((row)=>{
+                row.forEach((td)=>{
+                    dataArr.push(td)
+                })
+            });
+            dataArr.find(x=>x.value===null).value = this.userFirst ? "0": 'X';
+            this.drowTable();
+            this.checkGameOver();
         }
 
     }
-    activateCell(){
-        this.app.querySelectorAll('table tr').forEach((tr,i)=>{
-            tr.querySelectorAll('td').forEach((td,j)=>{
-                if (i=== this.currentPosition[0] && j === this.currentPosition[1]){
-                    td.dataset.active = '1';
-                    td.classList.add('active');
-                }else{
-                    td.classList.remove('active');
-                    td.dataset.active = '0';
-                }
+    drowTable(){
+        let table = document.querySelector('table');
+        this.mainData.forEach((row,i)=>{
+            let tr = table.querySelectorAll('tr')[i];
+            row.forEach((tData,j)=>{
+                let td = tr.querySelectorAll('td')[j];
+                tData.isActive ? td.classList.add('active'): td.classList.remove('active');
+                td.innerHTML = tData.value;
             })
         })
     }
-    checkEndGame(){
-        let td =  [...this.app.querySelectorAll('td')].find(x=>x.dataset.value === "");
-
-        if (!td){
-            this.gameOver = true;
-        }
+    createTable(){
+        let table = document.createElement('table');
+        this.mainData.forEach((row)=>{
+            let tr = document.createElement('tr');
+            row.forEach((tData)=>{
+                let td = document.createElement('td');
+                tr.appendChild(td);
+            });
+            table.appendChild(tr)
+        });
+        this.app.appendChild(table);
+    }
+    activeteCell(){
+        this.mainData.forEach((row)=>{
+            row.forEach((tData)=>{
+                if (tData.coords[0] === this.pos[0] && tData.coords[1] === this.pos[1]){
+                    tData.isActive = true;
+                }else{
+                    tData.isActive = false
+                }
+            })
+        })
+        this.drowTable();
     }
     addEvent(){
        document.addEventListener('keydown',(e)=>{
            switch (e.code) {
-               case 'ArrowUp':{
-                   this.currentPosition[0] = this.currentPosition[0] === 0 ?  2 : this.currentPosition[0] - 1;
-                   this.activateCell();
+               case 'ArrowDown':{
+                   this.pos[0] === this.length ? this.pos[0] = 0: this.pos[0]++;
+                   this.activeteCell();
                    break;
                }
                case 'ArrowLeft':{
-
-                   this.currentPosition[1] = this.currentPosition[1] === 0 ?  2 : this.currentPosition[1] - 1;
-                   this.activateCell();
+                   this.pos[1] === 0 ? this.pos[1] = this.length: this.pos[1]--;
+                   this.activeteCell();
                    break;
+
                }
                case 'ArrowRight':{
-                   this.currentPosition[1] = this.currentPosition[1] === 2 ?  0 : this.currentPosition[1] + 1;
-                   this.activateCell();
+                   this.pos[1] === this.length ? this.pos[1] = 0: this.pos[1]++;
+                   this.activeteCell();
                    break;
                }
-               case 'ArrowDown':{
-                   this.currentPosition[0] = this.currentPosition[0] === 2 ?  0 : this.currentPosition[0] + 1;
-                   this.activateCell();
+               case 'ArrowUp':{
+                   this.pos[0] === 0 ? this.pos[0] = this.length: this.pos[0]--;
+                   this.activeteCell();
                    break;
                }
                case 'Enter':{
-                   if (this.userFirst){
-                       this.app.querySelectorAll('table tr').forEach((tr,i)=>{
-                           tr.querySelectorAll('td').forEach((td,j)=>{
-                               if (td.dataset.active === '1' && td.dataset.value === ''){
-                                   td.dataset.value = 'X';
-                                   td.innerHTML = 'X';
-                                   this.computerMove();
-                               }
-                           })
-                       });
-
-                   }else{
-                       this.app.querySelectorAll('table tr').forEach((tr,i)=>{
-                           tr.querySelectorAll('td').forEach((td,j)=>{
-                               if (td.dataset.active === '1' && td.dataset.value === ''){
-                                   td.dataset.value = '0';
-                                   td.innerHTML = '0';
-                                   this.computerMove();
-                               }
-                           })
-                       });
-
-                   }
-
+                   this.mainData.forEach((row)=>{
+                       row.forEach((tData)=>{
+                           if (tData.coords[0] === this.pos[0] && tData.coords[1] === this.pos[1] && tData.value === null){
+                               tData.value = !this.userFirst ? "0": 'X';
+                               this.drowTable();
+                               this.checkGameOver();
+                               this.computerMove();
+                           }
+                       })
+                   });
                    break;
                }
                case 'Backspace':{
