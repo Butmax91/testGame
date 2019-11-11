@@ -1,0 +1,26 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+.app{
+    width: 1280px;
+    height: 780px;
+    border: 1px solid black;
+    margin: auto;
+    padding-top: 200px;
+}
+.app table{
+    border-collapse: collapse;
+    margin: auto;
+}
+
+.app table td {
+    padding: 30px;
+    border: 1px solid grey;
+}
+.app table .active{
+    border: 2px solid red;
+    position: relative;
+    top:1px;
+}
