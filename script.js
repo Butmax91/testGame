@@ -6,21 +6,22 @@ class Game{
     }
     init(){
         this.mainData = [];
-        this.userFirst = false //Math.random() > 0.5;
+        this.userFirst = Math.random() > 0.5;
         this.pos = [0,0];
         this.gameOver = false;
         this.addEvent();
         this.createData();
-        this.userFirst ? this.activeteCell() :  this.computerMove();
+        this.userFirst ? this.activeteCell() :  this.computerMove();this.activeteCell();
 
     }
-    checkGameOver(){
+    checkGameOver(player){
         let checkArr = [];
         this.mainData.forEach((row)=>{
             row.forEach((td)=>{
                 checkArr.push(td);
             })
         });
+
         for (let i = 0; i <= this.length  ; i++) {
             let row = [];
             let col = [];
@@ -43,7 +44,7 @@ class Game{
             if (row.filter((el, index, arr) => {
                 return el.value === arr[0].value && el.value !== null
             }).length === row.length){
-                console.log('row');
+                console.log(player, ' win');
                 this.gameOver = true;
                 return
 
@@ -51,25 +52,29 @@ class Game{
             if (col.filter((el, index, arr) => {
                 return el.value === arr[0].value && el.value !== null
             }).length === col.length){
-                console.log('col');
+                console.log(player, ' win');
                 this.gameOver = true;
                 return
             }
             if (diagonal.filter((el, index, arr) => {
                 return el.value === arr[0].value && el.value !== null
             }).length === diagonal.length){
-                console.log('diagonal');
+                console.log(player, ' win');
                 this.gameOver = true;
                 return
             }
             if (diagonalReverse.filter((el, index, arr) => {
                 return el.value === arr[0].value && el.value !== null
             }).length === diagonalReverse.length){
-                console.log('diagonalReverse');
+                console.log(player, ' win');
                 this.gameOver = true;
                 return
             }
 
+        }
+        if(!checkArr.find(el => el.value === null)){
+            console.log('no winners');
+            this.gameOver = true;
         }
     }
     createData(){
@@ -80,7 +85,7 @@ class Game{
                     coords: [i,j],
                     isActive: false,
                     value: null
-                }
+                };
                 row.push(td);
             }
             this.mainData.push(row);
@@ -96,8 +101,9 @@ class Game{
                 })
             });
             dataArr.find(x=>x.value===null).value = this.userFirst ? "0": 'X';
+
             this.drowTable();
-            this.checkGameOver();
+            this.checkGameOver('computer');
         }
 
     }
@@ -133,7 +139,7 @@ class Game{
                     tData.isActive = false
                 }
             })
-        })
+        });
         this.drowTable();
     }
     addEvent(){
@@ -161,16 +167,19 @@ class Game{
                    break;
                }
                case 'Enter':{
-                   this.mainData.forEach((row)=>{
-                       row.forEach((tData)=>{
-                           if (tData.coords[0] === this.pos[0] && tData.coords[1] === this.pos[1] && tData.value === null){
-                               tData.value = !this.userFirst ? "0": 'X';
-                               this.drowTable();
-                               this.checkGameOver();
-                               this.computerMove();
-                           }
-                       })
-                   });
+                   if (!this.gameOver){
+                       this.mainData.forEach((row)=>{
+                           row.forEach((tData)=>{
+                               if (tData.coords[0] === this.pos[0] && tData.coords[1] === this.pos[1] && tData.value === null){
+                                   tData.value = !this.userFirst ? "0": 'X';
+                                   this.drowTable();
+                                   this.checkGameOver('player');
+                                   this.computerMove();
+                               }
+                           })
+                       });
+                   }
+
                    break;
                }
                case 'Backspace':{
